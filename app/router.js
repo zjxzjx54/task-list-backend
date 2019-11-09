@@ -10,7 +10,7 @@ module.exports = app => {
   router.get('/user/:id', controller.user.page);
   router.post('/admin', isAdmin, controller.admin);
   router.post('/user', isLoginUser, hasAdminPermission, controller.user.create);*/
-  router.post('/login',controller.user.login)
-  router.post('/api/task/:type', checkToken, controller.task.get); // app/controller/v1/comments.js
+  router.post('/login',controller.user.login);
+  router.post('/api/task/add', controller.task.add); // app/controller/v1/comments.js
 };
 
