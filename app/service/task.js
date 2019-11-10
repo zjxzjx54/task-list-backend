@@ -2,15 +2,26 @@ const Service = require('egg').Service;
 
 class TaskService extends Service {
   async get(uid, taskType) {
+    let result;
     if(taskType === 'process'){
-
-    }else if(taskType === 'finished'){
-
-    }else if(taskType === 'timeout'){
-
+      result = await this.app.mysql.query("select * from note_task where userId = ? AND is_finished = ?",[uid,0]);
+    }else if(taskType === 'finish'){
+      result = await this.app.mysql.query("select * from note_task where userId = ? AND is_finished = ?",[uid,1]);
     }
-    const tasks = await this.app.mysql.get('users', { id: 11 });
-    return { tasks };
+    return result;
+  }
+
+  async add(task){
+    const result = await this.app.mysql.insert('note_task', {
+      title: task.title,
+      note: task.note,
+      status: task.status,
+      tag: task.tag,
+      start_date: task.start_date,
+      end_date: task.end_date,
+      userId:task.userId
+    });
+    return result
   }
 }
 

@@ -2,7 +2,7 @@
 const createToken = require('../util/createToken');
 const md5 = require('md5');
 const Controller = require('egg').Controller;
-//获取所有的task
+
 class UserController extends Controller {
     async login() {
         const { ctx } = this;
@@ -19,7 +19,7 @@ class UserController extends Controller {
                 ctx.success({
                     msg: '登录成功',
                     data: {
-                        uid: result.id,
+                        userId: result.id,
                         username: result.user_name,
                         email:result.email,
                         token,

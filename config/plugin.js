@@ -9,10 +9,18 @@ module.exports = {
   mysql:{
     enable: true,
     package: 'egg-mysql',
+  },
+  'egg-validate':{
+    enable: true,
+    package: 'egg-validate',
+  },
+  cors: {
+    enable: true,
+    package: 'egg-cors'
   }
 };
 
-exports.validate = {
+/*exports.validate = {
   enable: true,
   package: 'egg-validate',
-};
+};*/
