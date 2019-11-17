@@ -5,8 +5,7 @@ class UserService extends Service {
 
 
     password = md5(password);
-    console.log("email",email);
-    console.log("password",password);
+
 
     const user = await this.app.mysql.get('note_user', { email });
 

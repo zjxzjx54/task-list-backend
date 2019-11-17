@@ -12,7 +12,7 @@ class UserController extends Controller {
             return
         }
         const result = await ctx.service.user.find(email,password);
-        console.log("result",result);
+
         if(result){
             if(md5(password) === result.password){
                 let token = createToken(result.id);

@@ -3,13 +3,9 @@ const jwt = require('jsonwebtoken');
 
 module.exports = async(ctx,next)=>{
   const authorization = ctx.get('authorization');
-
-  console.log(authorization)  ;
   if(authorization){
     try{
-      console.log(1111);
       let decoded = jwt.verify(authorization, config.jwt.secret);
-      console.log(2222);
      /* console.log(decoded);返回如下
       { id: '5934afe7adb12d30f0679b41',
       iat: 1496629988,
