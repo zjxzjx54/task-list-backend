@@ -8,7 +8,10 @@ class UserController extends Controller {
         const { ctx } = this;
         const {email,password} = this.ctx.request.body;
         if(email === "" || password === ""){
-            ctx.throw(400, '用户名或密码不能为空!');
+            ctx.success({
+                msg:'用户名或密码为空',
+                success:false,
+            });
             return
         }
         const result = await ctx.service.user.find(email,password);
@@ -33,7 +36,8 @@ class UserController extends Controller {
                     success:false,
                 })
             }
-        }else{
+        }
+        else{
             console.log(4444);
             ctx.success({
                 msg:'用户名不存在',
@@ -41,6 +45,42 @@ class UserController extends Controller {
             });
         }
 
+    }
+    async signup(){
+        const { ctx } = this;
+        const {email,password,username} = this.ctx.request.body;
+        try{
+            ctx.validate({
+                email:{type:'string',require:true},
+                password:{type:'string',require:true},
+                username:{type:'string',require:true},
+            }, ctx.request.body)
+            let result  = await ctx.service.user.add(email,password,username)
+            if(result === "邮箱重复"){
+                ctx.success({
+                    msg:'邮箱重复',
+                    success:false,
+                })
+            }
+            else{
+                if(result.affectedRows  === 1){
+                    ctx.success({
+                        msg: "创建新用户成功!",
+                        success:true,
+                    })
+                }else{
+                    ctx.success({
+                        msg: "创建用户失败",
+                        success:false,
+                    })
+                }
+            }
+        }catch(err){
+            ctx.success({
+                msg: err,
+                success:false,
+            });
+        }
     }
 }
 

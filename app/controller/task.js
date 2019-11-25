@@ -119,7 +119,28 @@ class TaskController extends Controller {
             });
         }
     }
-
+    async filter(){
+        const {ctx} = this;
+        const {userId,title,type,start_date, end_date} = ctx.request.body;
+        try {
+            ctx.validate({
+                userId:{type:'number',require:true},
+                start_date:{type:'string',require:true},
+                end_date:{type:'string',require:true},
+            },ctx.request.body);
+            const result = await ctx.service.task.filter(userId,title,type,start_date, end_date)
+            ctx.success({
+              msg:'查询成功!',
+              success:true,
+              data:result
+            })
+        }catch(err){
+            ctx.success({
+                msg:err,
+                success:false
+            })
+        }
+    }
 }
 
 module.exports = TaskController;
