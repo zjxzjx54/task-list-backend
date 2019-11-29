@@ -53,16 +53,47 @@ class TaskService extends Service {
   }
   async filter(userId,title,type,start_date, end_date){
     let result = {process:[], finished:[],timeout:[]}, today = moment().format("YYYY-MM-DD");
+    let sqlStr = '';
     if(type === 'process'){
-      result.process = await this.app.mysql.query("select * from note_task where is_finished = 0 AND is_delete = 0 AND start_date >= ? AND end_date <= ? AND userId = ?",[start_date, end_date,userId])
-    }else if(type === 'finished'){
-      result.finished = await this.app.mysql.query("select * from note_task where is_finished = 1 AND is_delete = 0 AND start_date >= ? AND end_date <= ? AND userId = ?",[start_date, end_date,userId])
-    }else if(type === 'timeout'){
-      result.timeout = await this.app.mysql.query("select * from note_task where is_finished = 0 AND is_delete = 0 AND end_date < ? AND userId = ?",[today,userId]);
+      if(title !== ''){
+        sqlStr =`select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND  is_finished = 0 AND is_delete = 0 AND title like "%${title}%" `;
+        console.log("sqlStr", sqlStr);
+        result.process = await this.app.mysql.query(sqlStr)
+      }else{
+        sqlStr =  `select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND  is_finished = 0 AND is_delete = 0`;
+        result.process = await this.app.mysql.query(sqlStr)
+      }
+     }else if(type === 'finished'){
+      if(title !== ''){
+        sqlStr =`select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND is_finished = 1 AND is_delete = 0 AND title like "%${title}%" `;
+        result.finished = await this.app.mysql.query(sqlStr)
+      }else{
+        sqlStr =`select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND is_finished = 1 AND is_delete = 0`;
+        result.finished = await this.app.mysql.query(sqlStr)
+      }
+      }else if(type === 'timeout'){
+      if(title !== ''){
+        result.timeout = await this.app.mysql.query(`select * from note_task where is_finished = 0 AND is_delete = 0 AND end_date < "${today}" AND userId = ${userId} AND title like "%${title}%" `,
+          [today,userId,title])
+      }else
+          result.timeout = await this.app.mysql.query(`select * from note_task where is_finished = 0 AND is_delete = 0 AND end_date < "${today}" AND userId = ${userId}`,[today,userId]);
     }else if(type === 'all'){
-      result.process = await this.app.mysql.query("select * from note_task where is_finished = 0 AND is_delete = 0 AND start_date >= ? AND end_date <= ? AND userId = ?",[start_date, end_date,userId])
-      result.finished = await this.app.mysql.query("select * from note_task where is_finished = 1 AND is_delete = 0 AND start_date >= ? AND end_date <= ? AND userId = ?",[start_date, end_date,userId]);
-      result.timeout = await this.app.mysql.query("select * from note_task where is_finished = 0 AND is_delete = 0 AND end_date < ? AND userId = ?",[today,userId]);
+      if(title !== ''){
+        sqlStr = `select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND  is_finished = 0 AND is_delete = 0 AND title like "%${title}%" `;
+        result.process = await this.app.mysql.query(sqlStr)
+        sqlStr =  `select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND is_finished = 1 AND is_delete = 0 AND title like "%${title}%" `;
+        result.finished = await this.app.mysql.query(sqlStr)
+        result.timeout = await this.app.mysql.query(`select * from note_task where is_finished = 0 AND is_delete = 0 AND end_date < ${today} AND userId = ${userId} AND title like "%${title}%" `,
+          [today,userId,title])
+      }else{
+        sqlStr =`select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND  is_finished = 0 AND is_delete = 0`;
+        result.process = await this.app.mysql.query(sqlStr)
+        sqlStr =`select * from note_task where start_date >= "${start_date}" AND end_date <= "${end_date}" AND userId = ${userId} AND is_finished = 1 AND is_delete = 0`;
+        result.finished = await this.app.mysql.query(sqlStr)
+        result.timeout = await this.app.mysql.query(`select * from note_task where is_finished = 0 AND is_delete = 0 AND end_date < "${today}" AND userId = ${userId}`
+          ,[today,userId]);
+      }
+
     }
     return result
   }
